@@ -12,6 +12,8 @@ public class BClassDescriptor
     private String name;
     private String association;
     private boolean isTestClass;
+    private Integer xPos;
+    private Integer yPos;
 
     /**
      * Constructor for objects of class BClassDescriptor
@@ -24,12 +26,14 @@ public class BClassDescriptor
      * @param yPos the y coordinate that the class is located on the IDE
      */
     public BClassDescriptor(int targetNumber, String name,
-        String association, boolean isTestClass)
+        String association, boolean isTestClass, Integer x, Integer y)
     {
         this.targetNumber = targetNumber;
         this.name = name;
         this.association = association;
         this.isTestClass = isTestClass;
+        this.xPos = x;
+        this.yPos = y;
     }
 
     /**
@@ -70,6 +74,16 @@ public class BClassDescriptor
     public boolean isTestClass()
     {
         return this.isTestClass;
+    }
+    
+    public Integer getXPosition()
+    {
+        return this.xPos;
+    }
+    
+    public Integer getYPosition()
+    {
+        return this.yPos;
     }
 
 }

@@ -176,11 +176,15 @@ public class ClassAttacher extends MenuGenerator
             curProject.close();
             FileWriter fStream = new FileWriter(filePath, true);
             
-            //BClassDescriptor attacherClass = findBClassDescriptorInList(curClass.getName());
+            BClassDescriptor attacherClass = findBClassDescriptorInList(curClass.getName());
             BClassDescriptor attachedClass = findLastAttachedClass(classToAttachTo);
             
             fStream.append("target" + attachedClass.getTargetNumber() +
                 ".association=" + curClass.getName() + "\n");
+            fStream.append("target" + attacherClass.getTargetNumber() +
+                ".x=" + (attachedClass.getXPosition() + 30) + "\n");
+            fStream.append("target" + attacherClass.getTargetNumber() +
+                ".y=" + (attachedClass.getYPosition() - 30) + "\n");
             
             fStream.flush();
             fStream.close();
@@ -210,8 +214,8 @@ public class ClassAttacher extends MenuGenerator
         String curName = null;
         String curAssociation = null;
         boolean isTestClass = false;
-        //Integer curXPos = 0;
-        //Integer curYPos = 0;
+        Integer curXPos = 0;
+        Integer curYPos = 0;
         try
         {
             Scanner scan = new Scanner(packageInfoFile);
@@ -229,7 +233,7 @@ public class ClassAttacher extends MenuGenerator
                         line.indexOf("."))) != curTargetNumber)
                     {
                         this.classList.add(new BClassDescriptor(curTargetNumber,
-                            curName, curAssociation, isTestClass/*, curXPos, curYPos*/));
+                            curName, curAssociation, isTestClass, curXPos, curYPos));
                         
                         curName = null;
                         curAssociation = null;
@@ -262,20 +266,20 @@ public class ClassAttacher extends MenuGenerator
                     }
                     //If the current line is the class type attribute, it
                     //saves the type
-                    //if(line.substring(line.indexOf(".") + 1,
-                        //line.indexOf("=")).equals("x"))
-                    //{
-                        //curXPos = Integer.parseInt(line.substring(line.indexOf("=" + 1,
-                            //line.length())));
-                    //}
+                    if(line.substring(line.indexOf(".") + 1,
+                        line.indexOf("=")).equals("x"))
+                    {
+                        curXPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
+                            line.length()));
+                    }
                     //If the current line is the class type attribute, it
                     //saves the type
-                    //if(line.substring(line.indexOf(".") + 1,
-                        //line.indexOf("=")).equals("y"))
-                    //{
-                        //curYPos = Integer.parseInt(line.substring(line.indexOf("=" + 1,
-                        //    line.length())));
-                    //}
+                    if(line.substring(line.indexOf(".") + 1,
+                        line.indexOf("=")).equals("y"))
+                    {
+                        curYPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
+                            line.length()));
+                    }
                 }
             }
             
@@ -284,8 +288,15 @@ public class ClassAttacher extends MenuGenerator
             if(curName != null)
             {
                 this.classList.add(new BClassDescriptor(curTargetNumber,
-                    curName, curAssociation, isTestClass/*, curXPos, curYPos*/));
+                    curName, curAssociation, isTestClass, curXPos, curYPos));
             }
+            for(BClassDescriptor bClass : classList)
+            {
+                System.out.println(bClass.getTargetNumber() + ", " + bClass.getClassName() + ", "
+                    + bClass.getAssociation() + ", " + bClass.isTestClass() + ", " + bClass.getXPosition().toString()
+                    + ", " + bClass.getYPosition().toString());
+            }
+            
         }
         catch(java.io.FileNotFoundException exc)
         {
