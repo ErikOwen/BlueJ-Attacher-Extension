@@ -1,9 +1,10 @@
 
 /**
- * Write a description of class BClassDescriptor here.
+ * The BDescriptor class is a data structure that holds important
+ * information for classes held in the BlueJ iDE.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * @author Erik Owen
+ * @version 1
  */
 public class BClassDescriptor
 {
@@ -14,8 +15,16 @@ public class BClassDescriptor
 
     /**
      * Constructor for objects of class BClassDescriptor
+     * 
+     * @param targetNumber the target number of the current class
+     * @param name the name of the current class
+     * @param association the association the current class has
+     * @param isTestClass showing whether or not this class is a test class or not
+     * @param xPos the x coordinate that the class is located on the IDE
+     * @param yPos the y coordinate that the class is located on the IDE
      */
-    public BClassDescriptor(int targetNumber, String name, String association, boolean isTestClass)
+    public BClassDescriptor(int targetNumber, String name,
+        String association, boolean isTestClass)
     {
         this.targetNumber = targetNumber;
         this.name = name;
@@ -24,10 +33,9 @@ public class BClassDescriptor
     }
 
     /**
-     * An example of a method - replace this comment with your own
+     * Gets the target number of this class
      * 
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y 
+     * @return the target number of the current class
      */
     public int getTargetNumber()
     {
@@ -35,10 +43,9 @@ public class BClassDescriptor
     }
     
     /**
-     * An example of a method - replace this comment with your own
+     * Gets the current class name
      * 
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y 
+     * @return the name of this class
      */
     public String getClassName()
     {
@@ -46,10 +53,9 @@ public class BClassDescriptor
     }
     
     /**
-     * An example of a method - replace this comment with your own
+     * Gets the association class of this class
      * 
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y 
+     * @return the association that this class has
      */
     public String getAssociation()
     {
@@ -57,13 +63,13 @@ public class BClassDescriptor
     }
     
     /**
-     * An example of a method - replace this comment with your own
+     * Determines if this class is a test class or not
      * 
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y 
+     * @return whether or not the this class is a test class
      */
     public boolean isTestClass()
     {
         return this.isTestClass;
     }
+
 }

@@ -9,26 +9,43 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 
-public class ClassAttacher extends MenuGenerator {
+/**
+ * The ClassAttacher class creates the attacher menu item and
+ * does all of the behind the scenes work to attach a unit test
+ * class to a regular class
+ * 
+ * @author Erik Owen
+ * @version 1
+ */
+public class ClassAttacher extends MenuGenerator
+{
     private BPackage curPackage;
     private BClass curClass;
     private BObject curObject;
     private BlueJ bluej;
     private ArrayList<BClassDescriptor> classList;
-
+    
+    /**
+     * Constructor to create a ClassAttacher object
+     * 
+     * @param bluej the highest level of class in the extension class
+     */
     public ClassAttacher(BlueJ bluej)
     {
         this.bluej = bluej;
         this.classList = new ArrayList<BClassDescriptor>();
     }
-    
-    public JMenuItem getToolsMenuItem(BPackage aPackage)
-    {
-        return new JMenuItem(new SimpleAction("Click Tools", "Tools menu:"));
-    }
 
-    public JMenuItem getClassMenuItem(BClass aClass) {
+    /**
+     * Method which give the attach item to classes that are unit test classes
+     * 
+     * @param aClass the current class selected
+     * @return a new JMenuItem
+     */
+    public JMenuItem getClassMenuItem(BClass aClass)
+    {
         boolean allowAttachOption = false;
+        JMenuItem returnItem;
         try
         {
             curPackage = aClass.getPackage();
@@ -45,20 +62,25 @@ public class ClassAttacher extends MenuGenerator {
         {
             System.out.println("Project is not open.");
         }
-        
-        JMenuItem returnItem;
 
+        //iterates through all of the classes in this package
         for(BClassDescriptor curClassDescriptor : this.classList)
         {
-            if(curClassDescriptor.getClassName().equals(aClass.getName()) && curClassDescriptor.isTestClass())
+            //Checks to see if the current class is a test class
+            if(curClassDescriptor.getClassName().equals(aClass.getName()) &&
+                curClassDescriptor.isTestClass())
             {
                 allowAttachOption = true;
             }
         }
+        
+        //If the current class is a test class then it adds the attach option
         if(allowAttachOption)
         {
-            returnItem = new JMenuItem(new SimpleAction("Attach...", "Attach Test Class To: "));
+            returnItem = new JMenuItem(new SimpleAction("Attach...",
+                "Attach Test Class To: "));
         }
+        //else it returns null
         else
         {
             returnItem = null;
@@ -67,6 +89,12 @@ public class ClassAttacher extends MenuGenerator {
         return returnItem;
     }
     
+    /**
+     * This class notifies which current class is selected
+     * 
+     * @param bc the class that was clicked
+     * @param jmi the JMenuItem added to the options in that class
+     */
     public void notifyPostClassMenu(BClass bc, JMenuItem jmi)
     {
         System.out.println("Post on Class menu");
@@ -80,10 +108,12 @@ public class ClassAttacher extends MenuGenerator {
     {
         try
         {
+            //If the current object is not null, then get its class
             if (curObject != null)
             {
                 curClass = curObject.getBClass();
             }
+            //If the current class is not null, then get its package
             if (curClass != null)
             {
                 curPackage = curClass.getPackage();
@@ -96,17 +126,22 @@ public class ClassAttacher extends MenuGenerator {
             String [] classNames = new String[50];
             int curIndex = 0;
             
-            for(BClassDescriptor curClass : this.classList)
+            //Iterates throught the list of all the classes
+            for(BClassDescriptor currentClass : this.classList)
             {
-                if(!curClass.isTestClass())
+                //If the current class is not a test class, then add it to the classes
+                //that the current test class can attach to
+                if(!currentClass.isTestClass())
                 {
-                    classNames[curIndex] = curClass.getClassName();
+                    classNames[curIndex] = currentClass.getClassName();
                     curIndex++;
                 }
             }
             
             JFrame frame = new JFrame("Attacher");
-            String attacherClass = (String) JOptionPane.showInputDialog(frame, "Choose one:", "Select Target", JOptionPane.QUESTION_MESSAGE, null, classNames, classNames[0]);
+            String attacherClass = (String) JOptionPane.showInputDialog(frame,
+                "Choose one:", "Select Target", JOptionPane.QUESTION_MESSAGE,
+                null, classNames, classNames[0]);
                 
             modifyBlueJPackageFile(attacherClass);
         }
@@ -124,24 +159,29 @@ public class ClassAttacher extends MenuGenerator {
         }
     }
     
+    /**
+     * Adds needed line to bluej.pkg file to create the attachment
+     * 
+     * @param classToAttachTo give the class which will be attached to
+     */
     private void modifyBlueJPackageFile(String classToAttachTo)
     {
         try
         {
             BProject curProject = curPackage.getProject();
-            String targetString = "";
             boolean foundTarget = false;
-            String filePathDir = curPackage.getDir().getPath();
-            
-            String filePath = filePathDir.concat("/bluej.pkg");
-
+            String filePath = curPackage.getDir().getPath().concat("/bluej.pkg");
             File curProjDirectory = curProject.getDir();
+            
             curProject.close();
             FileWriter fStream = new FileWriter(filePath, true);
             
+            //BClassDescriptor attacherClass = findBClassDescriptorInList(curClass.getName());
             BClassDescriptor attachedClass = findLastAttachedClass(classToAttachTo);
             
-            fStream.append("target" + attachedClass.getTargetNumber() + ".association=" + curClass.getName() + "\n");
+            fStream.append("target" + attachedClass.getTargetNumber() +
+                ".association=" + curClass.getName() + "\n");
+            
             fStream.flush();
             fStream.close();
             
@@ -166,46 +206,85 @@ public class ClassAttacher extends MenuGenerator {
     {
         this.classList.clear();
         File packageInfoFile = new File(filePath);
-        String curLine = "";
         int curTargetNumber = 0;
         String curName = null;
         String curAssociation = null;
         boolean isTestClass = false;
-        try {
+        //Integer curXPos = 0;
+        //Integer curYPos = 0;
+        try
+        {
             Scanner scan = new Scanner(packageInfoFile);
+            //Continues to read lines while there is one to read in
             while(scan.hasNext())
             {
-                curLine = scan.nextLine();
+                String line = scan.nextLine();
             
-                if((curLine.substring(0, 6).equals("target")))
+                //Determines f the first part of the line is "target"
+                if((line.substring(0, 6).equals("target")))
                 {
-                    if(curTargetNumber != 0 && Integer.parseInt(curLine.substring(6, curLine.indexOf("."))) != curTargetNumber)
+                    //Determines if the class' target number is the same
+                    //target number as the previous one read in
+                    if(curTargetNumber != 0 && Integer.parseInt(line.substring(6,
+                        line.indexOf("."))) != curTargetNumber)
                     {
-                        this.classList.add(new BClassDescriptor(curTargetNumber, curName, curAssociation, isTestClass));
-                        //classList.add(new BClassDescriptor(curTargetNumber, curName, curAssociation, isTestClass));
+                        this.classList.add(new BClassDescriptor(curTargetNumber,
+                            curName, curAssociation, isTestClass/*, curXPos, curYPos*/));
+                        
                         curName = null;
                         curAssociation = null;
                         isTestClass = false;
                     }
-                    curTargetNumber = Integer.parseInt(curLine.substring(6, curLine.indexOf(".")));
                     
-                    if(curLine.substring(curLine.indexOf(".") + 1, curLine.indexOf("=")).equals("name"))
+                    curTargetNumber = Integer.parseInt(line.substring(6, line.indexOf(".")));
+                    
+                        //Saves the classes name if current line is the name attribute
+                    if(line.substring(line.indexOf(".") + 1,
+                        line.indexOf("=")).equals("name"))
                     {
-                        curName = curLine.substring(curLine.indexOf("=") + 1, curLine.length());
+                        curName = line.substring(line.indexOf("=") + 1, line.length());
                     }
-                    if(curLine.substring(curLine.indexOf(".") + 1, curLine.indexOf("=")).equals("association"))
+                    //Determines the class' association if current line is the
+                    //association attribute
+                    if(line.substring(line.indexOf(".") + 1,
+                        line.indexOf("=")).equals("association"))
                     {
-                        curAssociation = curLine.substring(curLine.indexOf("=") + 1, curLine.length());
+                        curAssociation = line.substring(line.indexOf("=") + 1,
+                            line.length());
                     }
-                    if(curLine.substring(curLine.indexOf(".") + 1, curLine.indexOf("=")).equals("type"))
+                    //If the current line is the class type attribute, it
+                    //saves the type
+                    if(line.substring(line.indexOf(".") + 1,
+                        line.indexOf("=")).equals("type"))
                     {
-                        isTestClass = curLine.substring(curLine.indexOf("=") + 1, curLine.length()).equals("UnitTestTarget");
+                        isTestClass = line.substring(line.indexOf("=") + 1,
+                            line.length()).equals("UnitTestTarget");
                     }
+                    //If the current line is the class type attribute, it
+                    //saves the type
+                    //if(line.substring(line.indexOf(".") + 1,
+                        //line.indexOf("=")).equals("x"))
+                    //{
+                        //curXPos = Integer.parseInt(line.substring(line.indexOf("=" + 1,
+                            //line.length())));
+                    //}
+                    //If the current line is the class type attribute, it
+                    //saves the type
+                    //if(line.substring(line.indexOf(".") + 1,
+                        //line.indexOf("=")).equals("y"))
+                    //{
+                        //curYPos = Integer.parseInt(line.substring(line.indexOf("=" + 1,
+                        //    line.length())));
+                    //}
                 }
             }
+            
+            //Check to determine if the last class in the while loop was
+            //added to the list or not
             if(curName != null)
             {
-                this.classList.add(new BClassDescriptor(curTargetNumber, curName, curAssociation, isTestClass));
+                this.classList.add(new BClassDescriptor(curTargetNumber,
+                    curName, curAssociation, isTestClass/*, curXPos, curYPos*/));
             }
         }
         catch(java.io.FileNotFoundException exc)

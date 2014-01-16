@@ -6,65 +6,71 @@ import java.net.URL;
 import javax.swing.*;
 import java.awt.event.*;
 
-/*
- * This is the starting point of a BlueJ Extension
+/**
+ * This is the starting point of the BlueJ Attacher Extension
  */
-public class AttacherExtension extends Extension implements PackageListener {
+public class AttacherExtension extends Extension
+{
     private String curProjFilePath;
-    /*
+    
+    /**
      * When this method is called, the extension may start its work.
+     * 
+     * @param bluej BlueJ class itself
      */
-    public void startup (BlueJ bluej) {
+    public void startup(BlueJ bluej)
+    {
         // Register a generator for menu items
         bluej.setMenuGenerator(new ClassAttacher(bluej));
-
-        // Listen for BlueJ events at the "package" level
-        bluej.addPackageListener(this);
-    }
+    } 
     
-    /*
-     * A package has been opened. Print the name of the project it is part of.
-     * System.out is redirected to the BlueJ debug log file.
-     * The location of this file is given in the Help/About BlueJ dialog box.
-     */
-    public void packageOpened ( PackageEvent ev )
-    {
-    }  
-  
-    /*
-     * A package is closing.
-     */
-    public void packageClosing ( PackageEvent ev )
-    {
-    }  
-    
-    /*
+    /**
      * This method must decide if this Extension is compatible with the 
      * current release of the BlueJ Extensions API
+     * 
+     * @return whether or not the extension is compatible with their version of BlueJ
      */
-    public boolean isCompatible () { 
+    public boolean isCompatible()
+    { 
         return true; 
     }
 
-    /*
+    /**
      * Returns the version number of this extension
+     * 
+     * @return the version of this extension
      */
-    public String  getVersion () { 
+    public String getVersion()
+    { 
         return ("1");  
     }
 
-    /*
+    /**
      * Returns the user-visible name of this extension
+     * 
+     * @return the name of this extension
      */
-    public String  getName () { 
+    public String getName()
+    { 
         return ("Attacher Extension");  
     }
 
-    public void terminate() {
-        System.out.println ("Attacher Extension terminates");
+    /**
+     * This method is called when the extension is terminated
+     */
+    public void terminate()
+    {
+        System.out.println("Attacher Extension terminates");
     }
     
-    public String getDescription () {
-        return ("A BlueJ extension which allows the user to attach one class to the back of the other in the BlueJ IDE.");
+    /**
+     * This method gives the description of the Attacher Extension
+     * 
+     * @return the description of this extension
+     */
+    public String getDescription()
+    {
+        return ("A BlueJ extension which allows the user " + 
+            "to attach one class to the back of the other in the BlueJ IDE.");
     }
 }
