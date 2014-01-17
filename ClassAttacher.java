@@ -243,45 +243,18 @@ public class ClassAttacher extends MenuGenerator
                     
                     curTargetNumber = Integer.parseInt(line.substring(6,
                         line.indexOf(".")));
+                        
+                    String tempName = curName;
+                    String tempAssociation = curAssociation;
+                    boolean tempIsTestClass = isTestClass;
+                    Integer tempXPos = curXPos;
+                    Integer tempYPos = curYPos;
                     
-                    //Saves the classes name if current line is the name attribute
-                    if(line.substring(line.indexOf(".") + 1,
-                        line.indexOf("=")).equals("name"))
-                    {
-                        curName = line.substring(line.indexOf("=") + 1, line.length());
-                    }
-                    //Determines the class' association if current line is the
-                    //association attribute
-                    if(line.substring(line.indexOf(".") + 1,
-                        line.indexOf("=")).equals("association"))
-                    {
-                        curAssociation = line.substring(line.indexOf("=") + 1,
-                            line.length());
-                    }
-                    //If the current line is the class type attribute, it
-                    //saves the type
-                    if(line.substring(line.indexOf(".") + 1,
-                        line.indexOf("=")).equals("type"))
-                    {
-                        isTestClass = line.substring(line.indexOf("=") + 1,
-                            line.length()).equals("UnitTestTarget");
-                    }
-                    //If the current line is the class type attribute, it
-                    //saves the type
-                    if(line.substring(line.indexOf(".") + 1,
-                        line.indexOf("=")).equals("x"))
-                    {
-                        curXPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
-                            line.length()));
-                    }
-                    //If the current line is the class type attribute, it
-                    //saves the type
-                    if(line.substring(line.indexOf(".") + 1,
-                        line.indexOf("=")).equals("y"))
-                    {
-                        curYPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
-                            line.length()));
-                    }
+                    curName = checkForName(line, tempName);
+                    curAssociation = checkForAssociation(line, tempAssociation);
+                    isTestClass = checkForIsTestClass(line, tempIsTestClass);
+                    curXPos = checkXPosition(line, tempXPos);
+                    curYPos = checkYPosition(line, tempYPos);
                 }
             }
             
@@ -299,6 +272,79 @@ public class ClassAttacher extends MenuGenerator
             System.out.println("The file could not be found.");
         }
         
+    }
+    
+    private String checkForName(String line, String tempName)
+    {
+        String returnName = tempName;
+        //Saves the classes name if current line is the name attribute
+        if(line.substring(line.indexOf(".") + 1,
+            line.indexOf("=")).equals("name"))
+        {
+            returnName = line.substring(line.indexOf("=") + 1, line.length());
+        }
+        
+        return returnName;
+    }
+    
+    private String checkForAssociation(String line, String tempAssociation)
+    {
+        String returnAssociation = tempAssociation;
+        //Determines the class' association if current line is the
+        //association attribute
+        if(line.substring(line.indexOf(".") + 1,
+            line.indexOf("=")).equals("association"))
+        {
+            returnAssociation = line.substring(line.indexOf("=") + 1,
+                line.length());
+        }
+        
+        return returnAssociation;
+    }
+    
+    private boolean checkForIsTestClass(String line, boolean tempIsTestClass)
+    {
+        boolean returnIsTestClass = tempIsTestClass;
+        //If the current line is the class type attribute, it
+        //saves the type
+        if(line.substring(line.indexOf(".") + 1,
+            line.indexOf("=")).equals("type"))
+        {
+            returnIsTestClass = line.substring(line.indexOf("=") + 1,
+                line.length()).equals("UnitTestTarget");
+        }
+        
+        return returnIsTestClass;
+    }
+    
+    private Integer checkXPosition(String line, Integer tempXPos)
+    {
+        Integer returnXPos = tempXPos;
+        //If the current line is the class type attribute, it
+        //saves the type
+        if(line.substring(line.indexOf(".") + 1,
+            line.indexOf("=")).equals("x"))
+        {
+            returnXPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
+                line.length()));
+        }
+        
+        return returnXPos;
+    }
+    
+    private Integer checkYPosition(String line, Integer tempYPos)
+    {
+        Integer returnYPos = tempYPos;
+        //If the current line is the class type attribute, it
+        //saves the type
+        if(line.substring(line.indexOf(".") + 1,
+            line.indexOf("=")).equals("y"))
+        {
+            returnYPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
+                line.length()));
+        }
+        
+        return returnYPos;
     }
     
     private BClassDescriptor findLastAttachedClass(String classToAttachTo)
