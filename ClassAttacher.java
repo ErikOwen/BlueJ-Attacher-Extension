@@ -176,7 +176,8 @@ public class ClassAttacher extends MenuGenerator
             curProject.close();
             FileWriter fStream = new FileWriter(filePath, true);
             
-            BClassDescriptor attacherClass = findBClassDescriptorInList(curClass.getName());
+            BClassDescriptor attacherClass = 
+                findBClassDescriptorInList(curClass.getName());
             BClassDescriptor attachedClass = findLastAttachedClass(classToAttachTo);
             
             fStream.append("target" + attachedClass.getTargetNumber() +
@@ -240,9 +241,10 @@ public class ClassAttacher extends MenuGenerator
                         isTestClass = false;
                     }
                     
-                    curTargetNumber = Integer.parseInt(line.substring(6, line.indexOf(".")));
+                    curTargetNumber = Integer.parseInt(line.substring(6,
+                        line.indexOf(".")));
                     
-                        //Saves the classes name if current line is the name attribute
+                    //Saves the classes name if current line is the name attribute
                     if(line.substring(line.indexOf(".") + 1,
                         line.indexOf("=")).equals("name"))
                     {
@@ -290,12 +292,6 @@ public class ClassAttacher extends MenuGenerator
                 this.classList.add(new BClassDescriptor(curTargetNumber,
                     curName, curAssociation, isTestClass, curXPos, curYPos));
             }
-            for(BClassDescriptor bClass : classList)
-            {
-                System.out.println(bClass.getTargetNumber() + ", " + bClass.getClassName() + ", "
-                    + bClass.getAssociation() + ", " + bClass.isTestClass() + ", " + bClass.getXPosition().toString()
-                    + ", " + bClass.getYPosition().toString());
-            }
             
         }
         catch(java.io.FileNotFoundException exc)
@@ -307,21 +303,35 @@ public class ClassAttacher extends MenuGenerator
     
     private BClassDescriptor findLastAttachedClass(String classToAttachTo)
     {
-        BClassDescriptor curClass = findBClassDescriptorInList(classToAttachTo);
-        while(curClass.getAssociation() != null)
+        BClassDescriptor currentClass = findBClassDescriptorInList(classToAttachTo);
+        
+        //Follows the linked path of associated classes until it gets to a
+        //class which does not have an associated class
+        while(currentClass.getAssociation() != null)
         {
-            curClass = findBClassDescriptorInList(curClass.getAssociation());
+            currentClass = findBClassDescriptorInList(currentClass.getAssociation());
         }
         
-        return curClass;
+        return currentClass;
     }
     
-    private BClassDescriptor findBClassDescriptorInList(String className) {
+    /**
+     * Given a class name, it returns the BClassDescriptor of the class with
+     * that name, or null if that class is not in the lsit
+     * 
+     * @param className the name of the class that is being searched for
+     * @return a BClassDescriptor containing the class with the parameters name
+     */
+    private BClassDescriptor findBClassDescriptorInList(String className)
+    {
         boolean found = false;
         BClassDescriptor returnClass = null;
         
+        //Iterates through all of the positions in the classList
         for(int index = 0; index < classList.size() && !found; index++)
         {
+            //If the name of the current BClassDescriptor matches the anme
+            //being searched for it stops the loop and returns that BClassDescriptor
             if(classList.get(index).getClassName().equals(className))
             {
                 found = true;
@@ -332,7 +342,9 @@ public class ClassAttacher extends MenuGenerator
         return returnClass;
     }
     
-    // The nested class that instantiates the different (simple) menus.
+    /**
+     * A nested class that instantiates the different (simple) menus.
+     */
     class SimpleAction extends AbstractAction
     {
         private String msgHeader;

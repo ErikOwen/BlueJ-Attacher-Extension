@@ -22,8 +22,8 @@ public class BClassDescriptor
      * @param name the name of the current class
      * @param association the association the current class has
      * @param isTestClass showing whether or not this class is a test class or not
-     * @param xPos the x coordinate that the class is located on the IDE
-     * @param yPos the y coordinate that the class is located on the IDE
+     * @param x the x coordinate that the class is located on the IDE
+     * @param y the y coordinate that the class is located on the IDE
      */
     public BClassDescriptor(int targetNumber, String name,
         String association, boolean isTestClass, Integer x, Integer y)
@@ -76,11 +76,23 @@ public class BClassDescriptor
         return this.isTestClass;
     }
     
+    /**
+     * Returns the x coordinate location in the IDE of the 
+     * current class
+     * 
+     * @return an x coordinate represented as an Integer
+     */
     public Integer getXPosition()
     {
         return this.xPos;
     }
     
+    /**
+     * Returns the y coordinate location in the IDE of the 
+     * current class
+     * 
+     * @return an y coordinate represented as an Integer
+     */
     public Integer getYPosition()
     {
         return this.yPos;
