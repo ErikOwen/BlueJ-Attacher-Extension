@@ -7,7 +7,13 @@ import javax.swing.*;
 import java.awt.event.*;
 
 /**
- * This is the starting point of the BlueJ Attacher Extension
+ * The AttacherExtension is the starting point for 
+ * the Attacher Extension code base. Its main purpose
+ * is to provide information and call the class which 
+ * starts the majority of the extension's work.
+ * 
+ * @author Erik Owen
+ * @version 1
  */
 public class AttacherExtension extends Extension
 {

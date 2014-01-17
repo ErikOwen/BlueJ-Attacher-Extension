@@ -19,11 +19,15 @@ import java.awt.*;
  */
 public class ClassAttacher extends MenuGenerator
 {
-    private BPackage curPackage;
-    private BClass curClass;
-    private BObject curObject;
-    private BlueJ bluej;
-    private ArrayList<BClassDescriptor> classList;
+    private BPackage curPackage;    //The current package the user is in in BlueJ
+    private BClass curClass;    //The current class the user is in in BlueJ
+    private BObject curObject;  //The current object the user is referring to in BlueJ
+    private BlueJ bluej;    //An instance of the BlueJ class itself
+    private ArrayList<BClassDescriptor> classList; //List with the classes in the package
+    
+    private static final int kMaxClassNameLength = 50;
+    private static final int kPixelOffset = 30;
+    private static final int kTargetWordLength = 6;
     
     /**
      * Constructor to create a ClassAttacher object
@@ -123,7 +127,7 @@ public class ClassAttacher extends MenuGenerator
             
             parsePackageFile(filePath);    
                 
-            String [] classNames = new String[50];
+            String [] classNames = new String[kMaxClassNameLength];
             int curIndex = 0;
             
             //Iterates throught the list of all the classes
@@ -159,11 +163,6 @@ public class ClassAttacher extends MenuGenerator
         }
     }
     
-    /**
-     * Adds needed line to bluej.pkg file to create the attachment
-     * 
-     * @param classToAttachTo give the class which will be attached to
-     */
     private void modifyBlueJPackageFile(String classToAttachTo)
     {
         try
@@ -183,9 +182,9 @@ public class ClassAttacher extends MenuGenerator
             fStream.append("target" + attachedClass.getTargetNumber() +
                 ".association=" + curClass.getName() + "\n");
             fStream.append("target" + attacherClass.getTargetNumber() +
-                ".x=" + (attachedClass.getXPosition() + 30) + "\n");
+                ".x=" + (attachedClass.getXPosition() + kPixelOffset) + "\n");
             fStream.append("target" + attacherClass.getTargetNumber() +
-                ".y=" + (attachedClass.getYPosition() - 30) + "\n");
+                ".y=" + (attachedClass.getYPosition() - kPixelOffset) + "\n");
             
             fStream.flush();
             fStream.close();
@@ -217,6 +216,7 @@ public class ClassAttacher extends MenuGenerator
         boolean isTestClass = false;
         Integer curXPos = 0;
         Integer curYPos = 0;
+        
         try
         {
             Scanner scan = new Scanner(packageInfoFile);
@@ -226,12 +226,12 @@ public class ClassAttacher extends MenuGenerator
                 String line = scan.nextLine();
             
                 //Determines f the first part of the line is "target"
-                if((line.substring(0, 6).equals("target")))
+                if((line.substring(0, kTargetWordLength).equals("target")))
                 {
                     //Determines if the class' target number is the same
                     //target number as the previous one read in
-                    if(curTargetNumber != 0 && Integer.parseInt(line.substring(6,
-                        line.indexOf("."))) != curTargetNumber)
+                    if(curTargetNumber != 0 && Integer.parseInt(line.substring(
+                        kTargetWordLength, line.indexOf("."))) != curTargetNumber)
                     {
                         this.classList.add(new BClassDescriptor(curTargetNumber,
                             curName, curAssociation, isTestClass, curXPos, curYPos));
@@ -241,7 +241,7 @@ public class ClassAttacher extends MenuGenerator
                         isTestClass = false;
                     }
                     
-                    curTargetNumber = Integer.parseInt(line.substring(6,
+                    curTargetNumber = Integer.parseInt(line.substring(kTargetWordLength,
                         line.indexOf(".")));
                         
                     String tempName = curName;
@@ -277,9 +277,9 @@ public class ClassAttacher extends MenuGenerator
     private String checkForName(String line, String tempName)
     {
         String returnName = tempName;
+        
         //Saves the classes name if current line is the name attribute
-        if(line.substring(line.indexOf(".") + 1,
-            line.indexOf("=")).equals("name"))
+        if(line.substring(line.indexOf(".") + 1, line.indexOf("=")).equals("name"))
         {
             returnName = line.substring(line.indexOf("=") + 1, line.length());
         }
@@ -290,13 +290,13 @@ public class ClassAttacher extends MenuGenerator
     private String checkForAssociation(String line, String tempAssociation)
     {
         String returnAssociation = tempAssociation;
+        
         //Determines the class' association if current line is the
         //association attribute
         if(line.substring(line.indexOf(".") + 1,
             line.indexOf("=")).equals("association"))
         {
-            returnAssociation = line.substring(line.indexOf("=") + 1,
-                line.length());
+            returnAssociation = line.substring(line.indexOf("=") + 1, line.length());
         }
         
         return returnAssociation;
@@ -305,10 +305,10 @@ public class ClassAttacher extends MenuGenerator
     private boolean checkForIsTestClass(String line, boolean tempIsTestClass)
     {
         boolean returnIsTestClass = tempIsTestClass;
+        
         //If the current line is the class type attribute, it
         //saves the type
-        if(line.substring(line.indexOf(".") + 1,
-            line.indexOf("=")).equals("type"))
+        if(line.substring(line.indexOf(".") + 1, line.indexOf("=")).equals("type"))
         {
             returnIsTestClass = line.substring(line.indexOf("=") + 1,
                 line.length()).equals("UnitTestTarget");
@@ -320,12 +320,13 @@ public class ClassAttacher extends MenuGenerator
     private Integer checkXPosition(String line, Integer tempXPos)
     {
         Integer returnXPos = tempXPos;
+        
         //If the current line is the class type attribute, it
         //saves the type
         if(line.substring(line.indexOf(".") + 1,
             line.indexOf("=")).equals("x"))
         {
-            returnXPos = Integer.parseInt(line.substring(line.indexOf("=") + 1,
+            returnXPos = Integer.parseInt(line.substring(line.indexOf("=") + 1, 
                 line.length()));
         }
         
@@ -335,6 +336,7 @@ public class ClassAttacher extends MenuGenerator
     private Integer checkYPosition(String line, Integer tempYPos)
     {
         Integer returnYPos = tempYPos;
+        
         //If the current line is the class type attribute, it
         //saves the type
         if(line.substring(line.indexOf(".") + 1,
@@ -361,13 +363,6 @@ public class ClassAttacher extends MenuGenerator
         return currentClass;
     }
     
-    /**
-     * Given a class name, it returns the BClassDescriptor of the class with
-     * that name, or null if that class is not in the lsit
-     * 
-     * @param className the name of the class that is being searched for
-     * @return a BClassDescriptor containing the class with the parameters name
-     */
     private BClassDescriptor findBClassDescriptorInList(String className)
     {
         boolean found = false;
